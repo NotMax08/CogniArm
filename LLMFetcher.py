@@ -1,14 +1,10 @@
-import google.generativeai as genai
+#need to import the project on python 3.13, was on the wrong version
 
-# Put your API key here
-API_KEY = "YOUR_API_KEY_HERE"
+from google import genai
 
-# Configure
-genai.configure(api_key=API_KEY)
-
-# Create model
-model = genai.GenerativeModel('gemini-1.5-flash')
-
-# Simple test
-response = model.generate_content("Hello Gemini! Say hi back.")
+# Only run this block for Gemini Developer API
+client = genai.Client(api_key='AIzaSyBAkaqZL0W3J08I449kJw8vsKfBzoqiKMI')
+response = client.models.generate_content(
+    model='gemini-2.5-flash', contents='Why is the sky blue?'
+)
 print(response.text)
