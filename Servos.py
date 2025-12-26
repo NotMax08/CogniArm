@@ -35,5 +35,6 @@ claw = ServoController(4, 180,"positive")
 zero = 0,0,0,0
 straight = 0,90,0,0
 
-ServoController.MoveOnCoordinate(zero)
-time.sleep(10000)
+ServoController.MoveOnCoordinate(IK.solver(20,30,0,90))
+print(IK.solver(20,30,0,90))
+time.sleep(1)
