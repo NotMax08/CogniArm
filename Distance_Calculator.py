@@ -3,7 +3,7 @@ import numpy as np
 from enum import Enum
 
 class Object_Heights(Enum):
-    CAN = 12.3  # height in cm
+    CAN = 12.3 / 2  # height in cm, but when it scans, it gets the middle point not the top point
 
 
 class Distance_Calculator:
@@ -36,28 +36,28 @@ class Distance_Calculator:
         tx = np.arctan2(pixel_coord_x, fx)
         ty = np.arctan2(pixel_coord_y, fy)
 
-        # Object height offset from camera
+        # object height
         object_top_height = Object_Heights.CAN.value
+
+        # Calculate difference in height
         delta_h = h - object_top_height
 
-        # Calculate ground plane distance
+        # we subtract ty from pitch because if object is above the centerline, ty would be negative, we want the opposite
         angle_to_ground = np.radians(pitch) - ty
-        
-        # DEBUG OUTPUT
-        print("="*60)
-        print(f"DEBUG INFO:")
-        print(f"Pixel coords: u={u:.0f}, v={v:.0f}")
-        print(f"Normalized: x={pixel_coord_x:.0f}, y={pixel_coord_y:.0f}")
-        print(f"Camera height: {h} cm, Object height: {object_top_height} cm")
-        print(f"Delta h: {delta_h} cm")
-        print(f"Pitch angle: {pitch}° = {np.radians(pitch):.4f} rad")
-        print(f"ty angle: {np.degrees(ty):.2f}° = {ty:.4f} rad")
-        print(f"angle_to_ground: {np.degrees(angle_to_ground):.2f}° = {angle_to_ground:.4f} rad")
-        print(f"tan(angle_to_ground): {np.tan(angle_to_ground):.4f}")
-        print("="*60)
-        
         # Distance calculation
-        z = delta_h / np.tan(angle_to_ground)
+        z = delta_h * np.tan(angle_to_ground)
         x = z * np.tan(tx)
 
         return float(x), float(delta_h), float(z), float(np.degrees(tx)), float(np.degrees(ty))
+
+    def convert_local_to_arm_frame(self, x_distance, y_distance, z_distance):
+        # Placeholder for conversion logic
+        # This would depend on the specific robotic arm's coordinate system
+        x_distance_to_arm = 39
+        y_distance_to_arm = 0
+        z_distance_to_arm = 0
+
+        arm_x = x_distance_to_arm - x_distance
+        arm_y = y_distance_to_arm - y_distance
+        arm_z = z_distance_to_arm - z_distance
+        return arm_x, arm_y, arm_z

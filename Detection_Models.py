@@ -23,7 +23,6 @@ class Detection_Models:
         # Run inference on the frame
         results = self.model.infer(frame, confidence=0.6)
         
-        print(f"Number of results in list: {len(results)}")
         
         # Convert to list of dictionaries in your expected format
         predictions = self._convert_predictions_to_dict(results, frame.shape)
@@ -34,29 +33,36 @@ class Detection_Models:
         # Calculate distances and draw detections
         distances = {}
         if predictions and 'predictions' in predictions and predictions['predictions']:
-            print(f"Found {len(predictions['predictions'])} detections")
             for pred in predictions['predictions']: 
+                class_name = pred['class_id']
                 coord_x = int(pred['x'])
                 coord_y = int(pred['y'])
 
                 x, y, z, tx, ty = self.distance_calculator.calculate_real_world_coordinates(coord_x, coord_y)
+                arm_x, arm_y, arm_z = self.distance_calculator.convert_local_to_arm_frame(x,y,z)
+                
+
+                if (class_name == 2):  # Assuming class_id 2 corresponds to 'can'
+                    class_name = 'can'
 
                 measurements = {
-                    "x_cm": x,
-                    "y_cm": y,
-                    "z_cm": z,
+                    "class_id": class_name,
+                    "x_cm": arm_x,
+                    "y_cm": arm_y,
+                    "z_cm": arm_z,
                     "tx": tx,
                     "ty": ty
                 }
-                # Stores a hashmap of detection_id to measurements
-                self.latest_measurements[pred['detection_id']] = measurements
-
+                # Stores a hashmap of class name to measurements
+                if (class_name == 2):  # Assuming class_id 2 corresponds to 'can'
+                    class_name = 'can'
+                self.latest_measurements[class_name] = measurements
 
             # Draw detections on the frame
             self._draw_detections(frame_with_boxes, predictions, measurements)
         else:
-            print("No detections found")
-        
+            print("No valid detections found.")
+
         return {
             'frame_with_boxes': frame_with_boxes,
             'measurements': self.latest_measurements

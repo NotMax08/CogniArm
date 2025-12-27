@@ -1,6 +1,7 @@
 import time
 from newIK import IK
-from servo import Servo, servo2040 # type: ignore
+from servo import Servo  # type: ignore
+
 
 class ServoController:
     def __init__(self, pin, range, direction):
