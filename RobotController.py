@@ -25,3 +25,11 @@ class RobotController:
     @staticmethod
     def wait_in_seconds(duration):
         time.sleep(duration)
+
+    def grab(self):
+        self.claw.rotate_angle(0)
+        time.sleep(1)
+    
+    def release(self):
+        self.claw.rotate_angle(60)
+        time.sleep(1)
