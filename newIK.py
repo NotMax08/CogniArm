@@ -1,8 +1,10 @@
 class IK:
     @staticmethod
-    def solver(x,y,z,effectorAngle):
+    def solver(coordinate,effectorAngle):
         import math
 
+        x,y,z = coordinate
+        
         x = x*10 # Converting all cm inputs into mm
         y = y*10 
         z = z*10 
@@ -21,7 +23,7 @@ class IK:
 
         x = x - L3 # Apply offset for claw length
 
-        y = y-base # Apply offset for base height
+        y = y - base # Apply offset for base height
 
         theta2 = math.degrees(math.atan((240*y)/(240*x)) + math.acos((x**2+y**2)/(240*math.sqrt(x**2+y**2))))
 
@@ -32,9 +34,10 @@ class IK:
         theta4 = effectorAngle -(theta2+theta3)
 
         theta4 = theta4 % 360 # Normalize angle into the 1st Quadrant
-        if theta1 > 180:
+        
+        if theta1 > 180: # turn reflex (>180) angles into negative angles
             theta1 = -(360-theta1)
-        if theta2 > 180: # turn reflex (>180) angles into negative angles
+        if theta2 > 180:
             theta2 = -(360-theta2)
         if theta3 > 180:
             theta3 = -(360-theta3)
@@ -43,11 +46,13 @@ class IK:
 
         if theta4 > 90:
             theta4 = 90
+        
         if theta4 < -90:
             theta4 = -90
 
         
         if abs(theta1) > 135 or abs(theta2) > 135 or abs(theta3) > 135 or abs(theta4) > 90: # Check if angle is out of servo range
+            print("Coordinate out of range!")
             return 0, 0, 0, 0
         
         return theta1,theta2,theta3,theta4
